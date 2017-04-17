@@ -50,25 +50,24 @@ public class Kc_mainActivity  extends Activity{
         kc="";
         //课程下拉列
         kcname_spin= (Spinner) findViewById(R.id.spacer_kcname);
-        //课程绑定
-        new Thread(){
+        getListCourse("1");
+        kcname_edit.addTextChangedListener(new TextWatcher() {
             @Override
-            public void run() {
-                urlData=URLData.getInstance();
-                urlData.GetCookie();
-                //获取下拉列表课程名
-                //String html_kc = urlData.GetXNXQKC("20161",kc);
-                HtmlParseJson htm2Json=new HtmlParseJson();
-                //myMap = htm2Json.OptiontoList(html_kc);
-                //验证码
-                bitmap_img = urlData.GetImage(0);
-//                Message msg = new Message();
-//                msg.what=2;
-//                msg.obj=bitmap_img;
-//                handler.sendMessage(msg);
-                handler.sendEmptyMessage(1);
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+
             }
-        }.start();
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                getListCourse("1");
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
 
         //更新页面
         handler=new Handler(){
@@ -88,6 +87,22 @@ public class Kc_mainActivity  extends Activity{
                 }
             }
         };
+    }
+    /**
+     *get the list of course
+     * @param courseId
+     */
+    public void getListCourse(String courseId){
+        new Thread(){
+            @Override
+            public void run() {
+                Log.e("kc",kc);
+                String html_kc = urlData.GetXNXQKC("20161",kc);
+                HtmlParseJson htm2Json=new HtmlParseJson();
+                myMap = htm2Json.OptiontoList(html_kc);
+                handler.sendEmptyMessage(1);
+            }
+        }.start();
     }
     //获得所有课程信息
     public void getAllkcInfo(View view) {
