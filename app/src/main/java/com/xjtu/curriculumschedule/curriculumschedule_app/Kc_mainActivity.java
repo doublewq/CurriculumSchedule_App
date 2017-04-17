@@ -8,14 +8,14 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Created by Administrator on 2017/4/15.
@@ -24,85 +24,96 @@ import java.util.Map;
  */
 public class Kc_mainActivity  extends Activity{
 
-    URLData urlData=new URLData();
+    URLData urlData=null;
     private Handler handler;
 
-    private String kc=null;
+    private String kc="";
 
+    Bitmap bitmap_img=null;
     private ImageView imgView=null;
     private Spinner kcname_spin;
     private Map myMap=new HashMap();
     private List<String> kcitems = new ArrayList<String>();
+    private ArrayList<ClassInfo1> Info1List=new ArrayList<>();
+    private ListView listV_kc=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.kc_layout);
+
         imgView=(ImageView) findViewById(R.id.imgv_yzm);
         //初始化学期下拉框 在xml里面配置过了
 
         EditText kcname_edit= (EditText) findViewById(R.id.edit_kcname);
         kc=kcname_edit.getText().toString();
-
+        kc="";
         //课程下拉列
         kcname_spin= (Spinner) findViewById(R.id.spacer_kcname);
-
         //课程绑定
         new Thread(){
             @Override
             public void run() {
+                urlData=URLData.getInstance();
                 urlData.GetCookie();
-                String html_kc = urlData.GetXNXQKC("20161",kc);
+                //获取下拉列表课程名
+                //String html_kc = urlData.GetXNXQKC("20161",kc);
                 HtmlParseJson htm2Json=new HtmlParseJson();
-                myMap = htm2Json.OptiontoList(html_kc);
-
+                //myMap = htm2Json.OptiontoList(html_kc);
+                //验证码
+                bitmap_img = urlData.GetImage(0);
+//                Message msg = new Message();
+//                msg.what=2;
+//                msg.obj=bitmap_img;
+//                handler.sendMessage(msg);
                 handler.sendEmptyMessage(1);
             }
         }.start();
-        //验证码
-        Thread t = new Thread(){
-            @Override
-            public void run() {
-                //urlData.GetCookie();
-                Bitmap bitmap_img = urlData.GetImage(0);
-                Message msg = new Message();
-                msg.what=2;
-                msg.obj=bitmap_img;
-                handler.sendMessage(msg);
-                //handler.sendEmptyMessage(2);
-
-            }
-        };
-        t.start();
-
 
         //更新页面
         handler=new Handler(){
             @Override
             public void handleMessage(Message msg) {
                 if(msg.what==1){
-                    for(Object s:myMap.keySet()){
-                        kcitems.add(myMap.get(s).toString());
-                    }
-                    ArrayAdapter<String> kcAdapter = new ArrayAdapter<String>(Kc_mainActivity.this, android.R.layout.simple_spinner_item, kcitems);
-                    kcAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    kcname_spin.setAdapter(kcAdapter);
+                    imgView.setImageBitmap(bitmap_img);//验证码显示
+//                    for(Object s:myMap.keySet()){
+//                        kcitems.add(myMap.get(s).toString());
+//                    }
+//                    ArrayAdapter<String> kcAdapter = new ArrayAdapter<String>(Kc_mainActivity.this, android.R.layout.simple_spinner_item, kcitems);
+//                    kcAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//                    kcname_spin.setAdapter(kcAdapter);//下拉列表显示
                 }else if(msg.what==2){
-                    imgView.setImageBitmap((Bitmap)msg.obj);
+                    Kc_Adapter kc_adapter=new Kc_Adapter(Kc_mainActivity.this,R.layout.list_kc_layout,Info1List);
+                    listV_kc.setAdapter(kc_adapter);
                 }
             }
         };
     }
     //获得所有课程信息
     public void getAllkcInfo(View view) {
+        listV_kc= (ListView) findViewById(R.id.kclist_listView);
         EditText edit_yzm= (EditText) findViewById(R.id.edit_yzm);
         final String yzm=edit_yzm.getText().toString();
-        String kcName=kcname_spin.getSelectedItem().toString();
+        //String kcName=kcname_spin.getSelectedItem().toString();
         new Thread(yzm){
             @Override
             public void run() {
                 String  html_tablekc=urlData.GetKBFBLessonSel("20161","000590","1",yzm);
-                Log.i("html",html_tablekc);
+                HtmlParseJson htmlJson=new HtmlParseJson();
+                try {
+                    JSONObject jsonObject=htmlJson.getClassInfo2(html_tablekc);
+                    Log.i("json",jsonObject.toString());
+                    Iterator<String> keysArr=jsonObject.keys();
+                    for (Iterator it=keysArr;it.hasNext();) {
+                        String thiskey=(String) it.next();
+                        Info1List=(ArrayList<ClassInfo1>) jsonObject.get(thiskey);
+                    }
+                    handler.sendEmptyMessage(2);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }.start();
 

@@ -233,7 +233,7 @@ public class HtmlParseJson {
         Document dname1 = Jsoup.parse(script.toString());
         String data = dname1.data();
         Document dname2 = Jsoup.parse(data);
-        System.out.println(dname2.toString());
+        //System.out.println(dname2.toString());
         Elements script1 = dname2.getElementsByTag("option");
         Map<String,String> map=new HashMap<String,String>();
         //将信息存入map中

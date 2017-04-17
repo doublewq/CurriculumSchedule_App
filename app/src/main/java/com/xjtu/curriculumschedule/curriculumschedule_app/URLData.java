@@ -23,19 +23,23 @@ import java.lang.StringBuilder;
 public class URLData{
 	public String m_head;
 	public String m_cokie;
-	
+	private static URLData m_UrlData;
+
+	public static URLData getInstance(){
+		if(m_UrlData==null){
+			m_UrlData=new URLData();
+		}
+		return m_UrlData;
+	}
 	
 	public void GetCookie()
 	{
 		m_head = "http://jwgl.lnc.edu.cn";
 		m_cokie = _GetCookie();
-		Log.i("GetCookie cook",m_cokie);
 	}
 
 	public Bitmap GetImage(int indexs)
 	{
-		//GetCookie();
-		//Log.i("GetImage cook",m_cokie);
 		return _GetImage(m_cokie, indexs);
 	}
 	//教室课表
@@ -70,10 +74,9 @@ public class URLData{
 	public String GetKBFBLessonSel(String Sel_XNXQ, String Sel_KC, String gs, String txt_yzm)
 	{
 		String param = "Sel_XNXQ="+Sel_XNXQ+"&Sel_KC="+Sel_KC+"&gs="+gs+"&txt_yzm="+txt_yzm;
-		Log.i("param",param);
+		//Log.i("param",param);
 		String url = m_head+"/ZNPK/KBFB_LessonSel_rpt.aspx";
 		String r = m_head+"/ZNPK/KBFB_LessonSel.aspx";
-		Log.i("cook and url",m_cokie+"------"+url);
 		return _PostFunction(m_cokie, url, r, param);
 	}
 
@@ -122,7 +125,6 @@ public class URLData{
 	{
 		String param = "xnxq="+xnxq+"&kc="+kc;
 		String url = m_head+"/ZNPK/Private/List_XNXQKC.aspx?"+param;
-		Log.i("GetXNXQKC cook",m_cokie);
 		return _GetFunction(m_cokie, url);
 	}
 	
@@ -201,7 +203,7 @@ public class URLData{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Log.i("get string",String.valueOf(tmp));
+		//Log.i("get string",String.valueOf(tmp));
 		return String.valueOf(tmp);
 	}
 
