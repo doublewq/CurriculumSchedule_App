@@ -94,6 +94,8 @@ public class Kc_mainActivity extends Activity {
         //数据库
         mHelper = new MyKcSQLiteOpenHelper(this, "course_table.db", null, 1, "kc");
 
+//        mDb=mHelper.getWritableDatabase();
+//        mDb.delete("KC_table",null,null);
         //更新页面
         handler = new Handler() {
 
@@ -112,7 +114,7 @@ public class Kc_mainActivity extends Activity {
                     Kc_Adapter kc_adapter = new Kc_Adapter(Kc_mainActivity.this, R.layout.list_kc_layout, Info1List);
                     listV_kc.setAdapter(kc_adapter);
                     //界面显示之后存入数据库
-                    //addInfoToSqlite();
+                    addInfoToSqlite();
                 }
             }
         };
@@ -122,6 +124,7 @@ public class Kc_mainActivity extends Activity {
     private void addInfoToSqlite() {
         //实例化ContentValues对象并进行数据组装
         ContentValues values = new ContentValues();
+        mDb=mHelper.getWritableDatabase();
         for (int i = 0; i < Info1List.size(); i++) {
             values.put("kc_xq", xqValue);
             values.put("kc_kcName", kcValue);
@@ -132,6 +135,7 @@ public class Kc_mainActivity extends Activity {
             mDb.insert("KC_table", null, values);
             values.clear();
         }
+        mDb.close();
     }
 
     /**
@@ -143,8 +147,6 @@ public class Kc_mainActivity extends Activity {
         new Thread() {
             @Override
             public void run() {
-                urlData = urlData.getInstance();
-                urlData.GetCookie();
                 if (courseId == "1")
                     kc = "";
                 else
@@ -153,6 +155,8 @@ public class Kc_mainActivity extends Activity {
                     if (xq.equals(getxq[i][0]))
                         xqValue = getxq[i][1];
                 }
+                urlData = urlData.getInstance();
+                urlData.GetCookie();
                 String html_kc = urlData.GetXNXQKC(xqValue, kc);
                 HtmlParseJson htm2Json = new HtmlParseJson();
                 myMap = htm2Json.OptiontoList(html_kc);
@@ -164,7 +168,8 @@ public class Kc_mainActivity extends Activity {
     }
 
     //获得所有课程信息
-    /*public void getAllkcInfo(View view) {
+    public void getAllkcInfo(View view) {
+        Info1List.clear();//每次点击检索时将列表清空
         listV_kc = (ListView) findViewById(R.id.kclist_listView);
         EditText edit_yzm = (EditText) findViewById(R.id.edit_yzm);
         final String yzm = edit_yzm.getText().toString();
@@ -202,9 +207,9 @@ public class Kc_mainActivity extends Activity {
             }.start();
         }
 
-    }*/
+    }
 
-   /* public boolean fetchDataFromSqlite() {
+    public boolean fetchDataFromSqlite() {
         boolean flag = false;
         mDb = mHelper.getReadableDatabase();
         Cursor cursor = mDb.query("KC_table", null, "kc_xq=? and kc_kcName=?", new String[]{xqValue, kcValue}, null, null, null);
@@ -219,11 +224,12 @@ public class Kc_mainActivity extends Activity {
                 cou.setWeek(kc_week);
                 cou.setLesson(kc_lesson);
                 cou.setInfo(kc_info);
+                Log.i("sqlite",cou.getInfo());
                 Info1List.add(cou);
             } while (cursor.moveToNext());
             cursor.close();
             mDb.close();
         }
         return flag;
-    }*/
+    }
 }

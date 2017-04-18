@@ -10,6 +10,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,7 +52,7 @@ public class HtmlParseJson {
                 }
             }
         }
-
+        Collections.sort(list);
         /*Iterator<ClassInfo1> it=list.iterator();
         while (it.hasNext()){
             ClassInfo1 classInfo1=new ClassInfo1();
@@ -108,7 +109,7 @@ public class HtmlParseJson {
                 }
             }
         }
-
+        Collections.sort(list);
         /*Iterator<ClassInfo1> it=list.iterator();
         while (it.hasNext()){
             ClassInfo1 classInfo1=new ClassInfo1();
@@ -163,7 +164,7 @@ public class HtmlParseJson {
                 }
             }
         }
-
+        Collections.sort(list);
         /*Iterator<ClassInfo1> it=list.iterator();
         while (it.hasNext()){
             ClassInfo1 classInfo1=new ClassInfo1();
