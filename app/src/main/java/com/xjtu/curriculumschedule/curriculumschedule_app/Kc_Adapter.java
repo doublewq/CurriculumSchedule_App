@@ -38,14 +38,14 @@ public class Kc_Adapter extends ArrayAdapter<ClassInfo1> {
         tvLesson.setText("|  "+"第"+info1_class.getLesson()+"节");
         tvInfo.setText("|  "+info1_class.getInfo());
 
-        //点击查看详细 事件
-        Button btn_detail= (Button) convertView.findViewById(R.id.btn_detail);
-        btn_detail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
+//        //点击查看详细 事件
+//        Button btn_detail= (Button) convertView.findViewById(R.id.btn_detail);
+//        btn_detail.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//            }
+//        });
         return convertView;
     }
 }
